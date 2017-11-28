@@ -97,22 +97,24 @@ mod unix_platform {
 
         // change dir to the portaudio folder
         err_to_panic(env::set_current_dir(PORTAUDIO_FOLDER));
-        //let sysroot = "/"; // todo fix me when not crosscompiling
-        let sysroot = format!("{}", env::var("TARGET_SYSROOT").unwrap());
-        // run portaudio autoconf
-        run(Command::new("./configure")
- 	        .args(&[&format!("CC={}", &env::var("TARGET_CC").unwrap())]) 
- 	        .args(&["--target", &env::var("TARGET").unwrap()]) // Only build static lib
-            .args(&["--host", &env::var("TARGET").unwrap()]) // Only build static lib
-            .args(&["--disable-shared", "--enable-static", "--disable-cxx"]) // Only build static lib
-            .args(&[&format!("--with-sysroot={}", &sysroot)])
-            .args(&["--prefix", out_dir.to_str().unwrap()]) // Install on the outdir
-            .arg("--with-pic")); // Build position-independent code (required by Rust)
 
-        // then make or not as the test need -lportaudio
-        //run(&mut Command::new("make"));
+        // setup portaudio autoconf
+        let mut command = Command::new("./configure");
+        if let Ok(target) = env::var("TARGET") {
+            command.arg(format!("--host={}", target));
+        }
+        if let Ok(cc) = env::var("TARGET_CC") {
+            command.arg(format!("CC={}", cc));
+        }
+        if let Ok(sysroot) = env::var("TARGET_SYSROOT") {
+            command.arg(format!("--with-sysroot={}", &sysroot));
+        }
+        command.args(&["--disable-shared", "--enable-static", "--disable-cxx", "--with-pic"])
+            .args(&["--prefix", out_dir.to_str().unwrap()]); // Install on the outdir
 
-        // "install" on the outdir
+        run(&mut command);
+
+        // build and "install" on the outdir
         run(Command::new("make").arg("install"));
 
         // return to rust-portaudio root
