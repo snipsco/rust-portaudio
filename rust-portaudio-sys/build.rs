@@ -106,6 +106,9 @@ mod unix_platform {
         if let Ok(cc) = env::var("TARGET_CC") {
             command.arg(format!("CC={}", cc));
         }
+        if let Ok(ar) = env::var("TARGET_AR") {
+            command.arg(format!("AR={}", ar));
+        }
         if let Ok(sysroot) = env::var("TARGET_SYSROOT") {
             command.arg(format!("--with-sysroot={}", &sysroot));
         }
