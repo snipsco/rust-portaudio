@@ -19,6 +19,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+extern crate dinghy_helper;
 extern crate pkg_config;
 
 use std::env;
@@ -76,10 +77,10 @@ fn run(command: &mut Command) {
 
 #[allow(dead_code)]
 mod unix_platform {
+    use dinghy_helper::CommandExt;
+    use std::env;
     use std::process::Command;
     use std::path::Path;
-
-    use std::env;
 
     use super::{err_to_panic, run};
 
@@ -99,26 +100,16 @@ mod unix_platform {
         err_to_panic(env::set_current_dir(PORTAUDIO_FOLDER));
 
         // setup portaudio autoconf
-        let mut command = Command::new("./configure");
-        if let Ok(target) = env::var("TARGET") {
-            command.arg(format!("--host={}", target));
-        }
-        if let Ok(cc) = env::var("TARGET_CC") {
-            command.arg(format!("CC={}", cc));
-        }
-        if let Ok(ar) = env::var("TARGET_AR") {
-            command.arg(format!("AR={}", ar));
-        }
-        if let Ok(sysroot) = env::var("TARGET_SYSROOT") {
-            command.arg(format!("--with-sysroot={}", &sysroot));
-        }
-        command.args(&["--disable-shared", "--enable-static", "--disable-cxx", "--with-pic"])
-            .args(&["--prefix", out_dir.to_str().unwrap()]); // Install on the outdir
-
-        run(&mut command);
+        run(Command::new("./configure")
+            .with_pkgconfig().unwrap()
+            .with_toolchain().unwrap()
+            .configure_prefix(out_dir).unwrap() // Install on the outdir
+            .args(&["--disable-shared", "--enable-static"]) // Only build static lib
+            .arg("--disable-cxx")
+            .arg("--with-pic")); // Build position-independent code (required by Rust)
 
         // build and "install" on the outdir
-        run(Command::new("make").arg("install"));
+        run(Command::new("make").arg("install").with_pkgconfig().unwrap());
 
         // return to rust-portaudio root
         err_to_panic(env::set_current_dir(".."));
@@ -155,7 +146,7 @@ mod platform {
         let portaudio_pc_file = out_dir.join("lib/pkgconfig/portaudio-2.0.pc");
         let portaudio_pc_file = portaudio_pc_file.to_str().unwrap();
 
-        err_to_panic(pkg_config::Config::new().statik(true).find(portaudio_pc_file));
+        err_to_panic(pkg_config::Config::new().statik(true).probe(portaudio_pc_file));
     }
 }
 
