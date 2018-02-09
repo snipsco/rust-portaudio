@@ -106,7 +106,9 @@ mod unix_platform {
             .configure_prefix(out_dir).unwrap() // Install on the outdir
             .args(&["--disable-shared", "--enable-static"]) // Only build static lib
             .arg("--disable-cxx")
-            .arg("--with-pic")); // Build position-independent code (required by Rust)
+            .arg("--with-pic") // Build position-independent code (required by Rust)
+            .arg_for_macos("--enable-mac-universal=no").unwrap()
+            .arg_for_macos("CFLAGS=-Wno-deprecated-declarations").unwrap());
 
         // build and "install" on the outdir
         run(Command::new("make").arg("install").with_pkgconfig().unwrap());
