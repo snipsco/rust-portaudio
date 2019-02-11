@@ -84,8 +84,8 @@ mod unix_platform {
 
     use super::{err_to_panic, run};
 
-    pub const PORTAUDIO_URL: &'static str = "http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz";
-    pub const PORTAUDIO_TAR: &'static str = "pa_stable_v19_20140130.tgz";
+    pub const PORTAUDIO_URL: &'static str = "https://s3.amazonaws.com/snips/portaudio/pa_stable_v19_20140130_patched.tgz";
+    pub const PORTAUDIO_TAR: &'static str = "pa_stable_v19_20140130_patched.tgz";
     pub const PORTAUDIO_FOLDER: &'static str = "portaudio";
 
     pub fn download() {
