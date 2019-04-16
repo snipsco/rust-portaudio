@@ -17,4 +17,4 @@ crate-type = ["rlib"]
 
 [build-dependencies]
 dinghy-helper = { git="https://github.com/snipsco/dinghy.git", branch="0.3" }
-pkg-config = { git="https://github.com/snipsco/pkg-config-rs.git", rev="dcd1021" }
+pkg-config = "0.3"
