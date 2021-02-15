@@ -19,7 +19,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-extern crate dinghy_helper;
+extern crate dinghy_build;
 extern crate pkg_config;
 
 use std::env;
@@ -82,7 +82,7 @@ fn run(command: &mut Command) {
 
 #[allow(dead_code)]
 mod unix_platform {
-    use dinghy_helper::CommandExt;
+    use dinghy_build::CommandExt;
     use std::env;
     use std::path::Path;
     use std::process::Command;

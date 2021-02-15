@@ -16,5 +16,5 @@ name = "portaudio_sys"
 crate-type = ["rlib"]
 
 [build-dependencies]
-dinghy-helper = { git="https://github.com/snipsco/dinghy.git", branch="0.3" }
+dinghy-build = "0.4.50"
 pkg-config = "0.3"
